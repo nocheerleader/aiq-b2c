@@ -2,7 +2,7 @@ import * as React from "react"
 
 import { cn } from "@/lib/utils"
 
-function Card({ className, children, ...props }: React.ComponentProps<"div">) {
+function Card({ className, children, showLogo = true, ...props }: React.ComponentProps<"div"> & { showLogo?: boolean }) {
   return (
     <div
       data-slot="card"
@@ -12,15 +12,17 @@ function Card({ className, children, ...props }: React.ComponentProps<"div">) {
       )}
       {...props}
     >
-      <a
-        href="https://www.100school.com/"
-        target="_blank"
-        rel="noopener noreferrer"
-        className="flex w-full justify-center"
-        aria-label="100 School"
-      >
-        <img src="/100school-logo.svg" alt="100 School" className="h-6 w-auto" />
-      </a>
+      {showLogo && (
+        <a
+          href="https://www.100school.com/"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="flex w-full justify-center"
+          aria-label="100 School"
+        >
+          <img src="/100school-logo.svg" alt="100 School" className="h-6 w-auto" />
+        </a>
+      )}
       {children}
     </div>
   )

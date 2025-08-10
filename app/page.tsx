@@ -9,7 +9,7 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { ArrowLeft, ArrowRight, RotateCcw, Share2 } from 'lucide-react'
+import { ArrowLeft, ArrowRight, RotateCcw, Share2, CheckCircle2 } from 'lucide-react'
 import { questions } from '@/data/questions'
 import { useQuizState } from '@/hooks/useQuizState'
 import { computeResult } from '@/lib/result'
@@ -166,30 +166,58 @@ export default function AIQReadinessQuiz() {
     return (
       <>
       <div className="min-h-screen bg-[var(--brand-bg,#f8fafc)] flex items-center justify-center p-4">
-        <Card className="relative w-full max-w-md bg-[var(--brand-card,white)]">
-          <CardHeader className="text-center space-y-4">
-            <div className="flex justify-center items-center w-full">
-              <CardTitle className="text-2xl font-bold text-[var(--brand-text,#1e293b)]">AI Readiness Scorecard</CardTitle>
-            </div>
-            <p className="text-[var(--brand-text,#64748b)]">
-            Find out if you're AI-ready in 3 minutes
-            </p>
-            <p className="text-[var(--brand-text,#64748b)]">Only 12% score as AI-ready</p>
-          </CardHeader>
-          <CardContent className="space-y-6">
-            <MovingBorderWrapper className="w-full">
-              <Button
-                onClick={() => updateState({ currentStep: "confidence" })}
-                className="w-full bg-[var(--brand-accent)] text-white hover:bg-[color-mix(in_oklch, var(--brand-accent) 90%, white)] hover:scale-105 hover:shadow-lg transition-all duration-200 ease-out"
-                size="lg"
-              >
-                Discover Your AI Readiness Level
-              </Button>
-              </MovingBorderWrapper>
-              <p className="text-center text-xs space-y-4">Join 2,000+ professionals becoming AI-first</p>
-          
-          </CardContent>
-        </Card>
+        {/* Wrapper to stack cards vertically with consistent width */}
+        <div className="w-full max-w-md flex flex-col gap-4">
+          {/* Primary landing card */}
+          <Card className="relative w-full max-w-md bg-[var(--brand-card,white)]">
+            <CardHeader className="text-center space-y-4">
+              <div className="flex justify-center items-center w-full">
+                <CardTitle className="text-2xl font-bold text-[var(--brand-text,#1e293b)]">AI Readiness Scorecard</CardTitle>
+              </div>
+              <p className="text-[var(--brand-text,#64748b)]">
+              Are You AI-Ready? <br /> Find Out in 3 Minutes
+              </p>
+              <p className="text-[var(--brand-text,#64748b)]">Get a score, see your gaps and get a path to level up.</p>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              <MovingBorderWrapper className="w-full">
+                <Button
+                  onClick={() => updateState({ currentStep: "confidence" })}
+                  className="w-full bg-[var(--brand-accent)] text-white hover:bg-[color-mix(in_oklch, var(--brand-accent) 90%, white)] hover:scale-105 hover:shadow-lg transition-all duration-200 ease-out"
+                  size="lg"
+                >
+                  Get My AI Readiness Score
+                </Button>
+                </MovingBorderWrapper>
+                <p className="text-center text-xs space-y-4">Join 2,000+ professionals becoming AI-first</p>
+            
+            </CardContent>
+          </Card>
+
+          {/* Secondary information card: What you get */}
+          <Card className="relative w-full max-w-md bg-[var(--brand-card,white)]" showLogo={false}>
+            <CardHeader className="text-center space-y-2">
+              <CardTitle className="text-xl font-semibold text-[var(--brand-text,#1e293b)]">What you get</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-8">
+              <ul className="space-y-3">
+                <li className="flex items-start gap-2">
+                  <CheckCircle2 className="h-4 w-4 text-[var(--brand-accent)] mt-0.5 flex-shrink-0" />
+                  <span className="text-sm text-[var(--brand-text,#1e293b)]">Your AI Readiness Score (and what it means).</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <CheckCircle2 className="h-4 w-4 text-[var(--brand-accent)] mt-0.5 flex-shrink-0" />
+                  <span className="text-sm text-[var(--brand-text,#1e293b)]">Top 3 habits to adopt this week.</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <CheckCircle2 className="h-4 w-4 text-[var(--brand-accent)] mt-0.5 flex-shrink-0" />
+                  <span className="text-sm text-[var(--brand-text,#1e293b)]">A track from our Foundations course to close your gaps.</span>
+                </li>
+              </ul>
+              <p className="text-xs text-muted-foreground text-center">No spam. We’ll send your score and we never share your responses.</p>
+            </CardContent>
+          </Card>
+        </div>
       </div>
       <ConfirmStartOver open={confirmOpen} onCancel={() => setConfirmOpen(false)} onConfirm={handleConfirmRestart} />
       </>
