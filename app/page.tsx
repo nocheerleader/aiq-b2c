@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Progress } from '@/components/ui/progress'
@@ -45,18 +45,63 @@ function indexToValue(index: number): number {
 }
 
 // Components
-function RestartButton({ onRestart, position = "absolute" }: { onRestart: () => void; position?: "absolute" | "static" }) {
+function RestartButton({ onRequestRestart, position = "absolute" }: { onRequestRestart: () => void; position?: "absolute" | "static" }) {
   return (
     <Button
-      variant="outline"
-      size="sm"
-      aria-label="Restart"
-      onClick={onRestart}
-      className={`${position === "absolute" ? "absolute top-2 right-2" : ""} flex items-center gap-1 bg-transparent h-6 px-2 text-xs`}
+      variant="ghost"
+      aria-label="Start over"
+      aria-haspopup="dialog"
+      onClick={onRequestRestart}
+      className={`${position === "absolute" ? "absolute top-2 right-2" : ""} text-muted-foreground flex items-center gap-1 rounded-md h-11 w-11 p-0 sm:h-8 sm:w-auto sm:px-3 sm:py-1 sm:text-xs`}
     >
-      <RotateCcw className="h-3 w-3" />
-      <span className="hidden sm:inline">Restart</span>
+      <RotateCcw className="h-4 w-4" />
+      <span className="hidden sm:inline">Start over</span>
     </Button>
+  )
+}
+
+function ConfirmStartOver({
+  open,
+  onConfirm,
+  onCancel,
+}: {
+  open: boolean
+  onConfirm: () => void
+  onCancel: () => void
+}) {
+  const cancelRef = useRef<HTMLButtonElement | null>(null)
+
+  useEffect(() => {
+    if (!open) return
+    const id = window.setTimeout(() => {
+      cancelRef.current?.focus()
+    }, 0)
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onCancel()
+    }
+    window.addEventListener('keydown', onKeyDown)
+    return () => {
+      window.clearTimeout(id)
+      window.removeEventListener('keydown', onKeyDown)
+    }
+  }, [open, onCancel])
+
+  if (!open) return null
+
+  return (
+    <div className="fixed inset-0 z-50 flex sm:items-center sm:justify-center" role="dialog" aria-modal="true" aria-labelledby="start-over-title">
+      <div className="fixed inset-0 bg-black/50 z-0" onClick={onCancel} aria-hidden="true" />
+      <div className="z-10 fixed inset-x-0 bottom-0 sm:static sm:mx-auto w-full sm:w-full max-w-md bg-white rounded-t-2xl sm:rounded-xl p-4 sm:p-6 shadow-lg">
+        <div className="space-y-3">
+          <h2 id="start-over-title" className="text-base sm:text-lg font-semibold text-[var(--brand-text,#1e293b)]">Start over?</h2>
+          <p className="text-sm text-muted-foreground">You’ll lose your current answers.</p>
+          <div className="mt-4 flex gap-2 sm:gap-3 justify-end">
+            <Button ref={cancelRef} variant="secondary" onClick={onCancel} className="min-w-24">Cancel</Button>
+            <Button onClick={onConfirm} className="min-w-24">Start over</Button>
+          </div>
+        </div>
+      </div>
+    </div>
   )
 }
 
@@ -103,10 +148,17 @@ function NavButtons({
 // Main App Component
 export default function AIQReadinessQuiz() {
   const { state, updateState, restart } = useQuizState()
+  const [confirmOpen, setConfirmOpen] = useState(false)
+  const handleRequestRestart = () => setConfirmOpen(true)
+  const handleConfirmRestart = () => {
+    setConfirmOpen(false)
+    restart()
+  }
 
   // Landing Screen
   if (state.currentStep === "landing") {
     return (
+      <>
       <div className="min-h-screen bg-[var(--brand-bg,#f8fafc)] flex items-center justify-center p-4">
         <Card className="relative w-full max-w-md bg-[var(--brand-card,white)]">
           <CardHeader className="text-center space-y-4">
@@ -133,18 +185,21 @@ export default function AIQReadinessQuiz() {
           </CardContent>
         </Card>
       </div>
+      <ConfirmStartOver open={confirmOpen} onCancel={() => setConfirmOpen(false)} onConfirm={handleConfirmRestart} />
+      </>
     )
   }
 
   // Confidence Slider Screen
   if (state.currentStep === "confidence") {
     return (
+      <>
       <div className="min-h-screen bg-[var(--brand-bg,#f8fafc)] flex items-center justify-center p-4">
         <Card className="relative w-full max-w-md bg-[var(--brand-card,white)]">
           <CardHeader className="relative">
             <div className="flex items-center justify-between mb-2">
               <p className="text-xs text-muted-foreground">Step 1 of 9</p>
-              <RestartButton onRestart={restart} position="static" />
+              <RestartButton onRequestRestart={handleRequestRestart} position="static" />
             </div>
             <div className="mb-3">
               <ProgressBar current={1} total={9} />
@@ -226,6 +281,8 @@ export default function AIQReadinessQuiz() {
           </CardContent>
         </Card>
       </div>
+      <ConfirmStartOver open={confirmOpen} onCancel={() => setConfirmOpen(false)} onConfirm={handleConfirmRestart} />
+      </>
     )
   }
 
@@ -261,12 +318,13 @@ export default function AIQReadinessQuiz() {
     }
 
     return (
+      <>
       <div className="min-h-screen bg-[var(--brand-bg,#f8fafc)] flex items-center justify-center p-4">
         <Card className="relative w-full max-w-md bg-[var(--brand-card,white)]">
           <CardHeader className="relative">
             <div className="flex items-center justify-between mb-2">
               <p className="text-xs text-muted-foreground">Step {questionIndex + 1} of 9</p>
-              <RestartButton onRestart={restart} position="static" />
+              <RestartButton onRequestRestart={handleRequestRestart} position="static" />
             </div>
             <div className="mb-3">
               <ProgressBar current={questionIndex + 1} total={9} />
@@ -317,16 +375,19 @@ export default function AIQReadinessQuiz() {
           </CardContent>
         </Card>
       </div>
+      <ConfirmStartOver open={confirmOpen} onCancel={() => setConfirmOpen(false)} onConfirm={handleConfirmRestart} />
+      </>
     )
   }
 
   // Email Capture Screen
   if (state.currentStep === "email") {
     return (
+      <>
       <div className="min-h-screen bg-[var(--brand-bg,#f8fafc)] flex items-center justify-center p-4">
         <Card className="relative w-full max-w-md bg-[var(--brand-card,white)]">
           <CardHeader className="relative">
-            <RestartButton onRestart={restart} />
+            <RestartButton onRequestRestart={handleRequestRestart} />
             <div className="mb-4">
               <CardTitle className="text-xl text-[var(--brand-text,#1e293b)] text-center">Almost Done!</CardTitle>
             </div>
@@ -379,6 +440,8 @@ export default function AIQReadinessQuiz() {
           </CardContent>
         </Card>
       </div>
+      <ConfirmStartOver open={confirmOpen} onCancel={() => setConfirmOpen(false)} onConfirm={handleConfirmRestart} />
+      </>
     )
   }
 
@@ -387,12 +450,13 @@ export default function AIQReadinessQuiz() {
     const result = computeResult(state.confidence, state.answers)
 
     return (
+      <>
       <div className="min-h-screen bg-[var(--brand-bg,#f8fafc)] flex items-center justify-center p-4">
         <Card className="w-full max-w-md bg-[var(--brand-card,white)]">
           <CardHeader className="relative">
             <div className="flex items-center justify-between mb-2">
               <p className="text-xs text-muted-foreground">Step 9 of 9</p>
-              <RestartButton onRestart={restart} position="static" />
+              <RestartButton onRequestRestart={handleRequestRestart} position="static" />
             </div>
             <div className="mb-3">
               <ProgressBar current={9} total={9} />
@@ -437,6 +501,8 @@ export default function AIQReadinessQuiz() {
           </CardContent>
         </Card>
       </div>
+      <ConfirmStartOver open={confirmOpen} onCancel={() => setConfirmOpen(false)} onConfirm={handleConfirmRestart} />
+      </>
     )
   }
 
