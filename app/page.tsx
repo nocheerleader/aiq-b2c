@@ -16,12 +16,46 @@ import { computeResult } from '@/lib/result'
 import { encodeResults } from '@/lib/share'
 import { MovingBorderWrapper } from '@/components/ui/moving-border'
 
+// Confidence slider helpers
+const CONFIDENCE_STOPS = [0, 25, 50, 100] as const
+
+const CONFIDENCE_LABELS: Record<number, string> = {
+  0: "AI? Never met her.",
+  25: "Taken my first AI steps",
+  50: "AI's part of my weekly routine",
+  100: "Mayor of AI City",
+}
+
+function valueToIndex(value: number): number {
+  let nearestIndex = 0
+  let smallestDiff = Number.POSITIVE_INFINITY
+  for (let i = 0; i < CONFIDENCE_STOPS.length; i++) {
+    const diff = Math.abs(CONFIDENCE_STOPS[i] - value)
+    if (diff < smallestDiff) {
+      smallestDiff = diff
+      nearestIndex = i
+    }
+  }
+  return nearestIndex
+}
+
+function indexToValue(index: number): number {
+  const clamped = Math.min(Math.max(index, 0), CONFIDENCE_STOPS.length - 1)
+  return CONFIDENCE_STOPS[clamped]
+}
+
 // Components
 function RestartButton({ onRestart }: { onRestart: () => void }) {
   return (
-    <Button variant="outline" size="sm" onClick={onRestart} className="flex items-center gap-2 bg-transparent">
-      <RotateCcw className="h-4 w-4" />
-      Restart
+    <Button
+      variant="outline"
+      size="sm"
+      aria-label="Restart"
+      onClick={onRestart}
+      className="absolute top-2 right-2 flex items-center gap-1 bg-transparent h-6 px-2 text-xs"
+    >
+      <RotateCcw className="h-3 w-3" />
+      <span className="hidden sm:inline">Restart</span>
     </Button>
   )
 }
@@ -77,7 +111,7 @@ export default function AIQReadinessQuiz() {
   if (state.currentStep === "landing") {
     return (
       <div className="min-h-screen bg-[var(--brand-bg,#f8fafc)] flex items-center justify-center p-4">
-        <Card className="w-full max-w-md bg-[var(--brand-card,white)]">
+        <Card className="relative w-full max-w-md bg-[var(--brand-card,white)]">
           <CardHeader className="text-center space-y-4">
             <div className="flex justify-center items-center w-full">
               <CardTitle className="text-2xl font-bold text-[var(--brand-text,#1e293b)]">AIQ Readiness Quiz</CardTitle>
@@ -109,7 +143,7 @@ export default function AIQReadinessQuiz() {
   if (state.currentStep === "confidence") {
     return (
       <div className="min-h-screen bg-[var(--brand-bg,#f8fafc)] flex items-center justify-center p-4">
-        <Card className="w-full max-w-md bg-[var(--brand-card,white)]">
+        <Card className="relative w-full max-w-md bg-[var(--brand-card,white)]">
           <CardHeader>
             <div className="flex justify-between items-center mb-4">
               <CardTitle className="text-xl text-[var(--brand-text,#1e293b)]">Confidence Assessment</CardTitle>
@@ -123,21 +157,66 @@ export default function AIQReadinessQuiz() {
                 How confident do you feel using AI tools today?
               </Label>
               <div className="space-y-4">
-                <Slider
-                  value={[state.confidence]}
-                  onValueChange={([value]) => updateState({ confidence: value })}
-                  onValueCommit={([value]) => updateState({ confidence: value }, { immediate: true })}
-                  max={100}
-                  step={1}
-                  className="w-full"
-                />
-                <div className="text-center">
-                  <span className="text-2xl font-bold text-[var(--brand-accent)]">{state.confidence}%</span>
-                </div>
-                <div className="flex justify-between text-sm text-[var(--brand-text,#64748b)]">
-                  <span>Not confident</span>
-                  <span>Very confident</span>
-                </div>
+                {(() => {
+                  // Work internally with 0..3 for even spacing and convert to 0/25/50/100 for storage
+                  const currentIndex = valueToIndex(state.confidence)
+                  const currentValue = indexToValue(currentIndex)
+                  const label = CONFIDENCE_LABELS[currentValue]
+
+                  return (
+                    <>
+                      <Slider
+                        value={[currentIndex]}
+                        onValueChange={([idx]) => {
+                          const snappedValue = indexToValue(idx)
+                          updateState({ confidence: snappedValue })
+                        }}
+                        onValueCommit={([idx]) => {
+                          const snappedValue = indexToValue(idx)
+                          updateState({ confidence: snappedValue }, { immediate: true })
+                        }}
+                        min={0}
+                        max={3}
+                        step={1}
+                        className="w-full"
+                      />
+
+                      {/* Tick marks with labels */}
+                      <div className="relative mt-2">
+                        <div className="h-0.5 bg-muted-foreground/30 absolute left-0 right-0 top-0" />
+                        <div className="flex justify-between">
+                          {CONFIDENCE_STOPS.map((stop, idx) => (
+                            <button
+                              key={stop}
+                              type="button"
+                              onClick={() => updateState({ confidence: stop }, { immediate: true })}
+                              className="flex flex-col items-center group"
+                              aria-label={`${stop}%`}
+                            >
+                              <span
+                                className={`block h-3 w-0.5 rounded-sm transition-colors ${
+                                  idx === currentIndex
+                                    ? 'bg-[var(--brand-accent,#ef4444)]'
+                                    : 'bg-muted-foreground/50 group-hover:bg-muted-foreground'
+                                }`}
+                              />
+                              <span className={`mt-1 text-xs ${idx === currentIndex ? 'text-[var(--brand-accent,#ef4444)] font-medium' : 'text-[var(--brand-text,#64748b)]'}`}>
+                                {stop}%
+                              </span>
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+
+                      {/* Selected phrase */}
+                      <div className="text-center">
+                        <span className="text-base font-medium text-[var(--brand-text,#1e293b)]">
+                          {label}
+                        </span>
+                      </div>
+                    </>
+                  )
+                })()}
               </div>
             </div>
             <NavButtons
@@ -183,7 +262,7 @@ export default function AIQReadinessQuiz() {
 
     return (
       <div className="min-h-screen bg-[var(--brand-bg,#f8fafc)] flex items-center justify-center p-4">
-        <Card className="w-full max-w-md bg-[var(--brand-card,white)]">
+        <Card className="relative w-full max-w-md bg-[var(--brand-card,white)]">
           <CardHeader>
             <div className="flex justify-between items-center mb-4">
               <CardTitle className="text-xl text-[var(--brand-text,#1e293b)]">Question {questionIndex} of 8</CardTitle>
@@ -242,7 +321,7 @@ export default function AIQReadinessQuiz() {
   if (state.currentStep === "email") {
     return (
       <div className="min-h-screen bg-[var(--brand-bg,#f8fafc)] flex items-center justify-center p-4">
-        <Card className="w-full max-w-md bg-[var(--brand-card,white)]">
+        <Card className="relative w-full max-w-md bg-[var(--brand-card,white)]">
           <CardHeader>
             <div className="flex justify-between items-center mb-4">
               <CardTitle className="text-xl text-[var(--brand-text,#1e293b)]">Almost Done!</CardTitle>
