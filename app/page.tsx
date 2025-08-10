@@ -500,12 +500,8 @@ export default function AIQReadinessQuiz() {
       <div className="min-h-screen bg-[var(--brand-bg,#f8fafc)] flex items-center justify-center p-4">
         <Card className="w-full max-w-md bg-[var(--brand-card,white)]">
           <CardHeader className="relative">
-            <div className="flex items-center justify-between mb-2">
-              <p className="text-xs text-muted-foreground">Step 10 of 10</p>
+            <div className="flex items-center justify-end mb-2">
               <RestartButton onRequestRestart={handleRequestRestart} position="static" />
-            </div>
-            <div className="mb-3">
-              <ProgressBar current={10} total={10} />
             </div>
             <CardTitle className="text-xl text-[var(--brand-text,#1e293b)] text-center">Your Results</CardTitle>
           </CardHeader>

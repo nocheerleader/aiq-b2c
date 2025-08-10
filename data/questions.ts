@@ -19,10 +19,10 @@ export const questions: Question[] = [
     text: 'When a new AI tool comes out, your first thought is…',
     domain: 'Activation',
     options: [
-      { key: 'A', label: '“Sounds complicated”' },
-      { key: 'B', label: '“I should try it out”' },
-      { key: 'C', label: '“Let’s see how this could fit in my system”' },
-      { key: 'D', label: '“What wild thing could I make with this?”' },
+      { key: 'A', label: 'Sounds complicated' },
+      { key: 'B', label: 'I should try it out' },
+      { key: 'C', label: 'Let’s see how this could fit in my system' },
+      { key: 'D', label: 'What wild thing could I make with this?' },
     ],
   },
   {
