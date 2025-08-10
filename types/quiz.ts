@@ -12,6 +12,7 @@ export interface QuizState {
 export interface Question {
   id: string
   text: string
-  options: string[]
+  domain: 'Activation' | 'Technical' | 'Imagination'
+  options: { key: 'A' | 'B' | 'C' | 'D'; label: string }[]
   multiSelect?: boolean
 } 

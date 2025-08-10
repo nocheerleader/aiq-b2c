@@ -232,7 +232,7 @@ export default function AIQReadinessQuiz() {
         <Card className="relative w-full max-w-md bg-[var(--brand-card,white)]">
           <CardHeader className="relative">
             <div className="flex items-center justify-between mb-2">
-              <p className="text-xs text-muted-foreground">Step 1 of 9</p>
+              <p className="text-xs text-muted-foreground">Step 1 of 10</p>
               <RestartButton onRequestRestart={handleRequestRestart} position="static" />
             </div>
             {/* Progress bar intentionally omitted on confidence screen */}
@@ -348,7 +348,7 @@ export default function AIQReadinessQuiz() {
       currentAnswer !== undefined && (Array.isArray(currentAnswer) ? currentAnswer.length > 0 : currentAnswer !== "")
 
     const handleNext = () => {
-      if (questionIndex < 8) {
+      if (questionIndex < 9) {
         updateState({ currentQuestion: questionIndex + 1 })
       } else {
         updateState({ currentStep: "email" })
@@ -369,13 +369,13 @@ export default function AIQReadinessQuiz() {
         <Card className="relative w-full max-w-md bg-[var(--brand-card,white)]">
           <CardHeader className="relative">
             <div className="flex items-center justify-between mb-2">
-              <p className="text-xs text-muted-foreground">Step {questionIndex + 1} of 9</p>
+              <p className="text-xs text-muted-foreground">Step {questionIndex + 1} of 10</p>
               <RestartButton onRequestRestart={handleRequestRestart} position="static" />
             </div>
             <div className="mb-3">
-              <ProgressBar current={questionIndex + 1} total={9} />
+              <ProgressBar current={questionIndex + 1} total={10} />
             </div>
-            <CardTitle className="text-xl text-[var(--brand-text,#1e293b)] text-center">Question {questionIndex} of 8</CardTitle>
+            <CardTitle className="text-xl text-[var(--brand-text,#1e293b)] text-center">Question {questionIndex} of 9</CardTitle>
           </CardHeader>
           <CardContent className="space-y-6">
             <div className="space-y-4">
@@ -384,21 +384,21 @@ export default function AIQReadinessQuiz() {
               {question.multiSelect ? (
                 <div className="space-y-3">
                   {question.options.map((option) => (
-                    <div key={option} className="flex items-center space-x-2">
+                    <div key={option.key} className="flex items-center space-x-2">
                       <Checkbox
-                        id={option}
-                        checked={((currentAnswer as string[]) || []).includes(option)}
+                        id={`${question.id}-${option.key}`}
+                        checked={((currentAnswer as string[]) || []).includes(option.key)}
                         onCheckedChange={(checked) => {
                           const current = (currentAnswer as string[]) || []
                           if (checked) {
-                            handleAnswerChange([...current, option])
+                            handleAnswerChange([...current, option.key])
                           } else {
-                            handleAnswerChange(current.filter((item) => item !== option))
+                            handleAnswerChange(current.filter((item) => item !== option.key))
                           }
                         }}
                       />
-                      <Label htmlFor={option} className="text-sm font-normal">
-                        {option}
+                      <Label htmlFor={`${question.id}-${option.key}`} className="text-sm font-normal">
+                        {option.label}
                       </Label>
                     </div>
                   ))}
@@ -406,10 +406,10 @@ export default function AIQReadinessQuiz() {
               ) : (
                 <RadioGroup value={(currentAnswer as string) || ""} onValueChange={handleAnswerChange}>
                   {question.options.map((option) => (
-                    <div key={option} className="flex items-center space-x-2">
-                      <RadioGroupItem value={option} id={option} />
-                      <Label htmlFor={option} className="text-sm font-normal">
-                        {option}
+                    <div key={option.key} className="flex items-center space-x-2">
+                      <RadioGroupItem value={option.key} id={`${question.id}-${option.key}`} />
+                      <Label htmlFor={`${question.id}-${option.key}`} className="text-sm font-normal">
+                        {option.label}
                       </Label>
                     </div>
                   ))}
@@ -501,11 +501,11 @@ export default function AIQReadinessQuiz() {
         <Card className="w-full max-w-md bg-[var(--brand-card,white)]">
           <CardHeader className="relative">
             <div className="flex items-center justify-between mb-2">
-              <p className="text-xs text-muted-foreground">Step 9 of 9</p>
+              <p className="text-xs text-muted-foreground">Step 10 of 10</p>
               <RestartButton onRequestRestart={handleRequestRestart} position="static" />
             </div>
             <div className="mb-3">
-              <ProgressBar current={9} total={9} />
+              <ProgressBar current={10} total={10} />
             </div>
             <CardTitle className="text-xl text-[var(--brand-text,#1e293b)] text-center">Your Results</CardTitle>
           </CardHeader>
