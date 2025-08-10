@@ -45,14 +45,14 @@ function indexToValue(index: number): number {
 }
 
 // Components
-function RestartButton({ onRestart }: { onRestart: () => void }) {
+function RestartButton({ onRestart, position = "absolute" }: { onRestart: () => void; position?: "absolute" | "static" }) {
   return (
     <Button
       variant="outline"
       size="sm"
       aria-label="Restart"
       onClick={onRestart}
-      className="absolute top-2 right-2 flex items-center gap-1 bg-transparent h-6 px-2 text-xs"
+      className={`${position === "absolute" ? "absolute top-2 right-2" : ""} flex items-center gap-1 bg-transparent h-6 px-2 text-xs`}
     >
       <RotateCcw className="h-3 w-3" />
       <span className="hidden sm:inline">Restart</span>
@@ -65,9 +65,6 @@ function ProgressBar({ current, total }: { current: number; total: number }) {
   return (
     <div className="w-full">
       <Progress value={progress} className="h-2" />
-      <p className="text-sm text-muted-foreground mt-2">
-        Step {current} of {total}
-      </p>
     </div>
   )
 }
@@ -144,12 +141,15 @@ export default function AIQReadinessQuiz() {
     return (
       <div className="min-h-screen bg-[var(--brand-bg,#f8fafc)] flex items-center justify-center p-4">
         <Card className="relative w-full max-w-md bg-[var(--brand-card,white)]">
-          <CardHeader>
-            <div className="flex justify-between items-center mb-4">
-              <CardTitle className="text-xl text-[var(--brand-text,#1e293b)]">Confidence Assessment</CardTitle>
-              <RestartButton onRestart={restart} />
+          <CardHeader className="relative">
+            <div className="flex items-center justify-between mb-2">
+              <p className="text-xs text-muted-foreground">Step 1 of 9</p>
+              <RestartButton onRestart={restart} position="static" />
             </div>
-            <ProgressBar current={1} total={9} />
+            <div className="mb-3">
+              <ProgressBar current={1} total={9} />
+            </div>
+            <CardTitle className="text-xl text-[var(--brand-text,#1e293b)] text-center">Confidence Assessment</CardTitle>
           </CardHeader>
           <CardContent className="space-y-6">
             <div className="space-y-4">
@@ -263,12 +263,15 @@ export default function AIQReadinessQuiz() {
     return (
       <div className="min-h-screen bg-[var(--brand-bg,#f8fafc)] flex items-center justify-center p-4">
         <Card className="relative w-full max-w-md bg-[var(--brand-card,white)]">
-          <CardHeader>
-            <div className="flex justify-between items-center mb-4">
-              <CardTitle className="text-xl text-[var(--brand-text,#1e293b)]">Question {questionIndex} of 8</CardTitle>
-              <RestartButton onRestart={restart} />
+          <CardHeader className="relative">
+            <div className="flex items-center justify-between mb-2">
+              <p className="text-xs text-muted-foreground">Step {questionIndex + 1} of 9</p>
+              <RestartButton onRestart={restart} position="static" />
             </div>
-            <ProgressBar current={questionIndex + 1} total={9} />
+            <div className="mb-3">
+              <ProgressBar current={questionIndex + 1} total={9} />
+            </div>
+            <CardTitle className="text-xl text-[var(--brand-text,#1e293b)] text-center">Question {questionIndex} of 8</CardTitle>
           </CardHeader>
           <CardContent className="space-y-6">
             <div className="space-y-4">
@@ -322,10 +325,10 @@ export default function AIQReadinessQuiz() {
     return (
       <div className="min-h-screen bg-[var(--brand-bg,#f8fafc)] flex items-center justify-center p-4">
         <Card className="relative w-full max-w-md bg-[var(--brand-card,white)]">
-          <CardHeader>
-            <div className="flex justify-between items-center mb-4">
-              <CardTitle className="text-xl text-[var(--brand-text,#1e293b)]">Almost Done!</CardTitle>
-              <RestartButton onRestart={restart} />
+          <CardHeader className="relative">
+            <RestartButton onRestart={restart} />
+            <div className="mb-4">
+              <CardTitle className="text-xl text-[var(--brand-text,#1e293b)] text-center">Almost Done!</CardTitle>
             </div>
           </CardHeader>
           <CardContent className="space-y-6">
@@ -333,12 +336,9 @@ export default function AIQReadinessQuiz() {
               <Label className="text-lg font-medium text-[var(--brand-text,#1e293b)]">
                 Get your personalized results
               </Label>
-              <p className="text-sm text-[var(--brand-text,#64748b)]">
-                Local prototype — your email stays on this device.
-              </p>
               <Input
                 type="email"
-                placeholder="Enter your email (optional)"
+                placeholder="Enter your email"
                 value={state.email || ""}
                 onChange={(e) => updateState({ email: e.target.value })}
                 onBlur={(e) => updateState({ email: e.target.value }, { immediate: true })}
@@ -389,11 +389,15 @@ export default function AIQReadinessQuiz() {
     return (
       <div className="min-h-screen bg-[var(--brand-bg,#f8fafc)] flex items-center justify-center p-4">
         <Card className="w-full max-w-md bg-[var(--brand-card,white)]">
-          <CardHeader>
-            <div className="flex justify-between items-center mb-4">
-              <CardTitle className="text-xl text-[var(--brand-text,#1e293b)]">Your Results</CardTitle>
-              <RestartButton onRestart={restart} />
+          <CardHeader className="relative">
+            <div className="flex items-center justify-between mb-2">
+              <p className="text-xs text-muted-foreground">Step 9 of 9</p>
+              <RestartButton onRestart={restart} position="static" />
             </div>
+            <div className="mb-3">
+              <ProgressBar current={9} total={9} />
+            </div>
+            <CardTitle className="text-xl text-[var(--brand-text,#1e293b)] text-center">Your Results</CardTitle>
           </CardHeader>
           <CardContent className="space-y-6">
             <h2 className="text-2xl font-bold text-[var(--brand-accent)]">{result.recommendation}</h2>
