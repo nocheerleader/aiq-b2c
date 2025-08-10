@@ -22,6 +22,17 @@ Continue building your app on:
 
 **[https://v0.dev/chat/projects/jSqU7id4QVL](https://v0.dev/chat/projects/jSqU7id4QVL)**
 
+## Local development
+
+1. Install deps: `pnpm install`
+2. Start dev server: `pnpm dev`
+3. Build for prod: `pnpm build`
+
+### Linting & Formatting
+
+- Run lint: `pnpm lint`
+- Auto-format: `pnpm format`
+
 ## How It Works
 
 1. Create and modify your project using [v0.dev](https://v0.dev)

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import type { QuizState } from '@/types/quiz'
 
 const STORAGE_KEY = 'aiq-quiz-state'
@@ -11,6 +11,7 @@ const defaultState: QuizState = {
 
 export function useQuizState() {
   const [state, setState] = useState<QuizState>(defaultState)
+  const saveTimeoutRef = useRef<number | null>(null)
 
   useEffect(() => {
     const saved = localStorage.getItem(STORAGE_KEY)
@@ -23,10 +24,29 @@ export function useQuizState() {
     }
   }, [])
 
-  const updateState = (updates: Partial<QuizState>) => {
+  const persist = (value: QuizState) => {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(value))
+  }
+
+  const updateState = (updates: Partial<QuizState>, options?: { immediate?: boolean }) => {
     setState(prev => {
       const newState = { ...prev, ...updates }
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(newState))
+      // Throttle writes to localStorage to avoid excessive churn on sliders/typing
+      if (options?.immediate) {
+        if (saveTimeoutRef.current) {
+          window.clearTimeout(saveTimeoutRef.current)
+          saveTimeoutRef.current = null
+        }
+        persist(newState)
+      } else {
+        if (saveTimeoutRef.current) {
+          window.clearTimeout(saveTimeoutRef.current)
+        }
+        saveTimeoutRef.current = window.setTimeout(() => {
+          persist(newState)
+          saveTimeoutRef.current = null
+        }, 250)
+      }
       return newState
     })
   }
