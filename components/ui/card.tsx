@@ -2,7 +2,7 @@ import * as React from "react"
 
 import { cn } from "@/lib/utils"
 
-function Card({ className, ...props }: React.ComponentProps<"div">) {
+function Card({ className, children, ...props }: React.ComponentProps<"div">) {
   return (
     <div
       data-slot="card"
@@ -11,7 +11,18 @@ function Card({ className, ...props }: React.ComponentProps<"div">) {
         className
       )}
       {...props}
-    />
+    >
+      <a
+        href="https://www.100school.com/"
+        target="_blank"
+        rel="noopener noreferrer"
+        className="flex w-full justify-center"
+        aria-label="100 School"
+      >
+        <img src="/100school-logo.svg" alt="100 School" className="h-8 w-auto" />
+      </a>
+      {children}
+    </div>
   )
 }
 

@@ -79,12 +79,13 @@ export default function AIQReadinessQuiz() {
       <div className="min-h-screen bg-[var(--brand-bg,#f8fafc)] flex items-center justify-center p-4">
         <Card className="w-full max-w-md bg-[var(--brand-card,white)]">
           <CardHeader className="text-center space-y-4">
-            <div className="flex justify-between items-center">
+            <div className="flex justify-center items-center w-full">
               <CardTitle className="text-2xl font-bold text-[var(--brand-text,#1e293b)]">AIQ Readiness Quiz</CardTitle>
             </div>
             <p className="text-[var(--brand-text,#64748b)]">
-              Discover your AI readiness level and get personalized recommendations
+            Find out if you're AI-ready in 3 minutes
             </p>
+            <p className="text-[var(--brand-text,#64748b)]">Only 12% score as AI-ready</p>
           </CardHeader>
           <CardContent className="space-y-6">
             <MovingBorderWrapper className="w-full">
@@ -93,9 +94,11 @@ export default function AIQReadinessQuiz() {
                 className="w-full bg-[var(--brand-accent)] text-white hover:bg-[color-mix(in_oklch, var(--brand-accent) 90%, white)] hover:scale-105 hover:shadow-lg transition-all duration-200 ease-out"
                 size="lg"
               >
-                Start Quiz
+                Discover Your AI Readiness Level
               </Button>
-            </MovingBorderWrapper>
+              </MovingBorderWrapper>
+              <p className="text-center text-xs space-y-4">Join 2,000+ professionals becoming AI-first</p>
+          
           </CardContent>
         </Card>
       </div>
