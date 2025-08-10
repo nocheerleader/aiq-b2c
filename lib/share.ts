@@ -9,12 +9,12 @@ function fromBase64Url(input: string): string {
   return atob(padded)
 }
 
-export function encodeResults(confidence: number, answers: QuizState['answers']): string {
+export function encodeResults(confidence: number | null, answers: QuizState['answers']): string {
   const data = { confidence, answers }
   return toBase64Url(JSON.stringify(data))
 }
 
-export function decodeResults(encoded: string): { confidence: number; answers: QuizState['answers'] } | null {
+export function decodeResults(encoded: string): { confidence: number | null; answers: QuizState['answers'] } | null {
   try {
     return JSON.parse(fromBase64Url(encoded))
   } catch {

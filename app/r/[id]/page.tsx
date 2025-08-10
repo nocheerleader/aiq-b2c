@@ -33,7 +33,9 @@ export default function SharedResultPage({ params }: { params: { id: string } })
         </CardHeader>
         <CardContent className="space-y-6">
           <h2 className="text-2xl font-bold text-[var(--brand-accent)]">{result.recommendation}</h2>
-          <p className="text-sm text-[var(--brand-text,#64748b)]">Confidence Level: {decoded.confidence}%</p>
+          <p className="text-sm text-[var(--brand-text,#64748b)]">
+            Confidence Level: {decoded.confidence !== null ? `${decoded.confidence}%` : 'Not provided'}
+          </p>
           <div className="space-y-2">
             <h3 className="font-semibold text-[var(--brand-text,#1e293b)] mb-2">Key insights:</h3>
             <ul className="list-none space-y-1">

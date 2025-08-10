@@ -19,7 +19,7 @@ function Card({ className, children, ...props }: React.ComponentProps<"div">) {
         className="flex w-full justify-center"
         aria-label="100 School"
       >
-        <img src="/100school-logo.svg" alt="100 School" className="h-8 w-auto" />
+        <img src="/100school-logo.svg" alt="100 School" className="h-6 w-auto" />
       </a>
       {children}
     </div>

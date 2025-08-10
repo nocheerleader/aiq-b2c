@@ -18,6 +18,12 @@ import { MovingBorderWrapper } from '@/components/ui/moving-border'
 
 // Confidence slider helpers
 const CONFIDENCE_STOPS = [0, 25, 50, 100] as const
+const CONFIDENCE_EMOJI: Record<number, { icon: string; label: string }> = {
+  0: { icon: '😬', label: 'New' },
+  25: { icon: '🌱', label: 'Learning' },
+  50: { icon: '🙂', label: 'Comfortable' },
+  100: { icon: '💪', label: 'Confident' },
+}
 
 const CONFIDENCE_LABELS: Record<number, string> = {
   0: "AI? Never met her.",
@@ -163,7 +169,7 @@ export default function AIQReadinessQuiz() {
         <Card className="relative w-full max-w-md bg-[var(--brand-card,white)]">
           <CardHeader className="text-center space-y-4">
             <div className="flex justify-center items-center w-full">
-              <CardTitle className="text-2xl font-bold text-[var(--brand-text,#1e293b)]">AIQ Readiness Quiz</CardTitle>
+              <CardTitle className="text-2xl font-bold text-[var(--brand-text,#1e293b)]">AI Readiness Scorecard</CardTitle>
             </div>
             <p className="text-[var(--brand-text,#64748b)]">
             Find out if you're AI-ready in 3 minutes
@@ -201,27 +207,27 @@ export default function AIQReadinessQuiz() {
               <p className="text-xs text-muted-foreground">Step 1 of 9</p>
               <RestartButton onRequestRestart={handleRequestRestart} position="static" />
             </div>
-            <div className="mb-3">
-              <ProgressBar current={1} total={9} />
-            </div>
+            {/* Progress bar intentionally omitted on confidence screen */}
             <CardTitle className="text-xl text-[var(--brand-text,#1e293b)] text-center">Confidence Assessment</CardTitle>
           </CardHeader>
           <CardContent className="space-y-6">
-            <div className="space-y-4">
+            <div className="space-y-2">
               <Label className="text-lg font-medium text-[var(--brand-text,#1e293b)]">
-                How confident do you feel using AI tools today?
+                How confident do you feel using AI tools?
               </Label>
-              <div className="space-y-4">
+              <p className="text-xs italic text-[var(--brand-text,#64748b)]">Pick the statement that fits you best.</p>
+              <div className="space-y-4 mt-2">
                 {(() => {
                   // Work internally with 0..3 for even spacing and convert to 0/25/50/100 for storage
-                  const currentIndex = valueToIndex(state.confidence)
-                  const currentValue = indexToValue(currentIndex)
-                  const label = CONFIDENCE_LABELS[currentValue]
+                  const hasSelection = state.confidence !== null && state.confidence !== undefined
+                  const currentIndex = hasSelection ? valueToIndex(state.confidence as number) : -1
+                  const currentValue = hasSelection ? indexToValue(currentIndex) : null
+                  const label = currentValue !== null ? CONFIDENCE_LABELS[currentValue] : ''
 
                   return (
                     <>
                       <Slider
-                        value={[currentIndex]}
+                        value={[Math.max(currentIndex, 0)]}
                         onValueChange={([idx]) => {
                           const snappedValue = indexToValue(idx)
                           updateState({ confidence: snappedValue })
@@ -236,38 +242,49 @@ export default function AIQReadinessQuiz() {
                         className="w-full"
                       />
 
-                      {/* Tick marks with labels */}
-                      <div className="relative mt-2">
+                      {/* Tick marks with emoji and small labels */}
+                      <div className="relative mt-3">
                         <div className="h-0.5 bg-muted-foreground/30 absolute left-0 right-0 top-0" />
                         <div className="flex justify-between">
-                          {CONFIDENCE_STOPS.map((stop, idx) => (
-                            <button
-                              key={stop}
-                              type="button"
-                              onClick={() => updateState({ confidence: stop }, { immediate: true })}
-                              className="flex flex-col items-center group"
-                              aria-label={`${stop}%`}
-                            >
-                              <span
-                                className={`block h-3 w-0.5 rounded-sm transition-colors ${
-                                  idx === currentIndex
-                                    ? 'bg-[var(--brand-accent,#ef4444)]'
-                                    : 'bg-muted-foreground/50 group-hover:bg-muted-foreground'
-                                }`}
-                              />
-                              <span className={`mt-1 text-xs ${idx === currentIndex ? 'text-[var(--brand-accent,#ef4444)] font-medium' : 'text-[var(--brand-text,#64748b)]'}`}>
-                                {stop}%
-                              </span>
-                            </button>
-                          ))}
+                          {CONFIDENCE_STOPS.map((stop, idx) => {
+                            const isActive = hasSelection && indexToValue(valueToIndex(state.confidence as number)) === stop
+                            const meta = CONFIDENCE_EMOJI[stop]
+                            return (
+                              <button
+                                key={stop}
+                                type="button"
+                                onClick={() => updateState({ confidence: stop }, { immediate: true })}
+                                className="flex flex-col items-center group"
+                                aria-label={`${meta.label}`}
+                              >
+                                <span
+                                  className={`block h-3 w-0.5 rounded-sm transition-colors ${
+                                    isActive
+                                      ? 'bg-[var(--brand-accent,#ef4444)]'
+                                      : 'bg-muted-foreground/50 group-hover:bg-muted-foreground'
+                                  }`}
+                                />
+                                <span className={`mt-1 text-base ${isActive ? 'text-[var(--brand-text,#1e293b)]' : 'text-[var(--brand-text,#64748b)]'}`}>
+                                  {meta.icon}
+                                </span>
+                                <span className={`mt-0.5 text-[10px] ${isActive ? 'text-[var(--brand-accent,#ef4444)] font-medium' : 'text-[var(--brand-text,#64748b)]'}`}>
+                                  {meta.label}
+                                </span>
+                              </button>
+                            )
+                          })}
                         </div>
                       </div>
 
                       {/* Selected phrase */}
-                      <div className="text-center">
-                        <span className="text-base font-medium text-[var(--brand-text,#1e293b)]">
-                          {label}
-                        </span>
+                      <div className="text-center mt-3 min-h-[1.5rem]">
+                        {hasSelection ? (
+                          <span className="text-base font-medium text-[var(--brand-text,#1e293b)]">
+                            {label}
+                          </span>
+                        ) : (
+                          <span className="text-sm text-[var(--brand-text,#64748b)]">Select one to continue</span>
+                        )}
                       </div>
                     </>
                   )
@@ -277,6 +294,7 @@ export default function AIQReadinessQuiz() {
             <NavButtons
               onBack={() => updateState({ currentStep: "landing" })}
               onNext={() => updateState({ currentStep: "question", currentQuestion: 1 })}
+              canGoNext={state.confidence !== null}
             />
           </CardContent>
         </Card>
@@ -465,7 +483,9 @@ export default function AIQReadinessQuiz() {
           </CardHeader>
           <CardContent className="space-y-6">
             <h2 className="text-2xl font-bold text-[var(--brand-accent)]">{result.recommendation}</h2>
-            <p className="text-sm text-[var(--brand-text,#64748b)]">Confidence Level: {state.confidence}%</p>
+            <p className="text-sm text-[var(--brand-text,#64748b)]">
+              Confidence Level: {state.confidence !== null ? `${state.confidence}%` : 'Not provided'}
+            </p>
             <div className="space-y-2">
               <h3 className="font-semibold text-[var(--brand-text,#1e293b)] mb-2">Why this fits you:</h3>
               <ul className="list-none space-y-1">

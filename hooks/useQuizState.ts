@@ -5,7 +5,7 @@ const STORAGE_KEY = 'aiq-quiz-state'
 
 const defaultState: QuizState = {
   currentStep: 'landing',
-  confidence: 50,
+  confidence: null,
   answers: {},
 }
 

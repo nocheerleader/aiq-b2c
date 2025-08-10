@@ -2,7 +2,7 @@ export type Step = 'landing' | 'confidence' | 'question' | 'email' | 'results'
 
 export interface QuizState {
   currentStep: Step
-  confidence: number
+  confidence: number | null
   answers: Record<string, string | string[]>
   currentQuestion?: number
   email?: string
