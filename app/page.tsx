@@ -14,6 +14,7 @@ import { questions } from '@/data/questions'
 import { useQuizState } from '@/hooks/useQuizState'
 import { computeResult } from '@/lib/result'
 import { encodeResults } from '@/lib/share'
+import { MovingBorderWrapper } from '@/components/ui/moving-border'
 
 // Components
 function RestartButton({ onRestart }: { onRestart: () => void }) {
@@ -86,13 +87,15 @@ export default function AIQReadinessQuiz() {
             </p>
           </CardHeader>
           <CardContent className="space-y-6">
-            <Button
-              onClick={() => updateState({ currentStep: "confidence" })}
-              className="w-full bg-[var(--brand-accent)] text-white hover:bg-[color-mix(in_oklch, var(--brand-accent) 90%, white)] hover:scale-105 hover:shadow-lg transition-all duration-200 ease-out"
-              size="lg"
-            >
-              Start Quiz
-            </Button>
+            <MovingBorderWrapper className="w-full">
+              <Button
+                onClick={() => updateState({ currentStep: "confidence" })}
+                className="w-full bg-[var(--brand-accent)] text-white hover:bg-[color-mix(in_oklch, var(--brand-accent) 90%, white)] hover:scale-105 hover:shadow-lg transition-all duration-200 ease-out"
+                size="lg"
+              >
+                Start Quiz
+              </Button>
+            </MovingBorderWrapper>
           </CardContent>
         </Card>
       </div>
