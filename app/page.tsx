@@ -80,7 +80,6 @@ export default function AIQReadinessQuiz() {
           <CardHeader className="text-center space-y-4">
             <div className="flex justify-between items-center">
               <CardTitle className="text-2xl font-bold text-[var(--brand-text,#1e293b)]">AIQ Readiness Quiz</CardTitle>
-              <RestartButton onRestart={restart} />
             </div>
             <p className="text-[var(--brand-text,#64748b)]">
               Discover your AI readiness level and get personalized recommendations
@@ -89,7 +88,7 @@ export default function AIQReadinessQuiz() {
           <CardContent className="space-y-6">
             <Button
               onClick={() => updateState({ currentStep: "confidence" })}
-              className="w-full bg-[var(--brand-accent)] text-white hover:bg-[color-mix(in_oklch, var(--brand-accent) 90%, white)]"
+              className="w-full bg-[var(--brand-accent)] text-white hover:bg-[color-mix(in_oklch, var(--brand-accent) 90%, white)] hover:scale-105 hover:shadow-lg transition-all duration-200 ease-out"
               size="lg"
             >
               Start Quiz
