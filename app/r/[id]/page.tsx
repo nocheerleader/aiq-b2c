@@ -6,9 +6,12 @@ import { computeResult } from '@/lib/result'
 import { ARCHETYPES } from '@/data/archetypes'
 import { FlipCard } from '@/components/results/FlipCard'
 import { decodeResults } from '@/lib/share'
+import { useParams } from 'next/navigation'
 
-export default function SharedResultPage({ params }: { params: { id: string } }) {
-  const decoded = decodeResults(params.id)
+export default function SharedResultPage() {
+  const params = useParams() as { id?: string }
+  const id = params?.id ?? ''
+  const decoded = decodeResults(id)
 
   if (!decoded) {
     return (
