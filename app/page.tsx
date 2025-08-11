@@ -462,20 +462,23 @@ export default function AIQReadinessQuiz() {
             </div>
 
             <div className="flex flex-col gap-3">
-              <Button
-                onClick={() =>
-                  updateState(
-                    {
-                      currentStep: "results",
-                      completedAt: new Date().toISOString(),
-                    },
-                    { immediate: true },
-                  )
-                }
-                className="w-full bg-[var(--brand-accent)] text-white hover:bg-[color-mix(in_oklch, var(--brand-accent) 90%, white)]"
-              >
-                View Results
-              </Button>
+              <MovingBorderWrapper className="w-full">
+                <Button
+                  onClick={() =>
+                    updateState(
+                      {
+                        currentStep: "results",
+                        completedAt: new Date().toISOString(),
+                      },
+                      { immediate: true },
+                    )
+                  }
+                  className="w-full bg-[var(--brand-accent)] text-white hover:bg-[color-mix(in_oklch, var(--brand-accent) 90%, white)] hover:scale-105 hover:shadow-lg transition-all duration-200 ease-out"
+                  size="lg"
+                >
+                  View Results
+                </Button>
+              </MovingBorderWrapper>
               <Button
                 variant="outline"
                 onClick={() =>
