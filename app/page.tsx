@@ -16,6 +16,8 @@ import { computeResult } from '@/lib/result'
 import { encodeResults } from '@/lib/share'
 import { MovingBorderWrapper } from '@/components/ui/moving-border'
 import { CircularText } from '@/components/ui/circular-text'
+import { ARCHETYPES } from '@/data/archetypes'
+import { FlipCard } from '@/components/results/FlipCard'
 
 // Confidence slider helpers
 const CONFIDENCE_STOPS = [0, 25, 50, 100] as const
@@ -173,7 +175,7 @@ export default function AIQReadinessQuiz() {
           <Card className="relative w-full max-w-md bg-[var(--brand-card,white)]">
             <CardHeader className="text-center space-y-4">
               <div className="flex justify-center items-center w-full">
-                <CardTitle className="text-2xl font-bold text-[var(--brand-text,#1e293b)]">AI Readiness Scorecard</CardTitle>
+                <CardTitle className="text-2xl font-bold text-[var(--brand-text,#1e293b)]">AIQ Readiness Scorecard</CardTitle>
               </div>
               <p className="text-[var(--brand-text,#64748b)]">
               Are You AI-Ready? <br /> Find Out in 3 Minutes
@@ -187,7 +189,7 @@ export default function AIQReadinessQuiz() {
                   className="w-full bg-[var(--brand-accent)] text-white hover:bg-[color-mix(in_oklch, var(--brand-accent) 90%, white)] hover:scale-105 hover:shadow-lg transition-all duration-200 ease-out"
                   size="lg"
                 >
-                  Get My AI Readiness Score
+                  Get My AIQ Readiness Score
                 </Button>
                 </MovingBorderWrapper>
                 <p className="text-center text-xs space-y-4">Join 2,000+ professionals becoming AI-first</p>
@@ -204,18 +206,18 @@ export default function AIQReadinessQuiz() {
               <ul className="space-y-3">
                 <li className="flex items-start gap-2">
                   <CheckCircle2 className="h-4 w-4 text-[var(--brand-accent)] mt-0.5 flex-shrink-0" />
-                  <span className="text-sm text-[var(--brand-text,#1e293b)]">Your AI Readiness Score (and what it means).</span>
+                  <span className="text-sm text-[var(--brand-text,#1e293b)]">Your AIQ Readiness Score (and what it means).</span>
                 </li>
                 <li className="flex items-start gap-2">
                   <CheckCircle2 className="h-4 w-4 text-[var(--brand-accent)] mt-0.5 flex-shrink-0" />
-                  <span className="text-sm text-[var(--brand-text,#1e293b)]">Top 3 habits to adopt this week.</span>
+                  <span className="text-sm text-[var(--brand-text,#1e293b)]">Identify your AIQ skill gaps.</span>
                 </li>
                 <li className="flex items-start gap-2">
                   <CheckCircle2 className="h-4 w-4 text-[var(--brand-accent)] mt-0.5 flex-shrink-0" />
-                  <span className="text-sm text-[var(--brand-text,#1e293b)]">A track from our Foundations course to close your gaps.</span>
+                  <span className="text-sm text-[var(--brand-text,#1e293b)]">A recommended track from our Foundations course to close your gaps.</span>
                 </li>
               </ul>
-              <p className="text-xs text-muted-foreground text-center">No spam. We’ll send your score and we never share your responses.</p>
+              <p className="text-xs text-muted-foreground text-center">We’ll never share your responses or spam you </p>
             </CardContent>
           </Card>
         </div>
@@ -483,18 +485,14 @@ export default function AIQReadinessQuiz() {
               </div>
               {/* Blurred preview content */}
               <div className="blur-sm select-none pointer-events-none">
-                <p className="text-base font-semibold text-white/90">{resultPreview.recommendation}</p>
+                <p className="text-base font-semibold text-white/90">{resultPreview.archetype}</p>
                 <p className="text-xs text-white/60 mt-1">Confidence: {state.confidence ?? '—'}%</p>
-                <ul className="mt-2 space-y-1 text-xs text-white/60">
-                  {resultPreview.reasons.slice(0, 3).map((r, i) => (
-                    <li key={i}>• {r}</li>
-                  ))}
-                </ul>
+                <p className="mt-2 text-xs text-white/60 line-clamp-3">{resultPreview.profile}</p>
               </div>
               {/* Spinning circular text overlay */}
               <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
                 <div className="text-[#ef4444] drop-shadow-sm animate-[spin_10s_linear_infinite]">
-                  <CircularText text="UNLOCK*YOUR*RESULTS*" radius={80} characterClassName="text-lg" />
+                  <CircularText text="UNLOCK*YOUR*RESULTS*" radius={80} characterClassName="text-lg font-black" />
                 </div>
               </div>
             </div>
@@ -592,43 +590,52 @@ export default function AIQReadinessQuiz() {
   // Results Screen
   if (state.currentStep === "results") {
     const result = computeResult(state.confidence, state.answers)
+    const { archetype, domainScores } = result
+    const content = ARCHETYPES[archetype]
 
     return (
       <>
       <div className="min-h-screen bg-[var(--brand-bg,#f8fafc)] flex items-center justify-center p-4">
-        <Card className="w-full max-w-md bg-[var(--brand-card,white)]">
+        <Card className="w-full max-w-2xl bg-[var(--brand-card,white)]">
           <CardHeader className="relative">
             <div className="flex items-center justify-end mb-2">
               <RestartButton onRequestRestart={handleRequestRestart} position="static" />
             </div>
-            <CardTitle className="text-xl text-[var(--brand-text,#1e293b)] text-center">Your Results</CardTitle>
+            <CardTitle className="text-2xl text-[var(--brand-text,#1e293b)] text-center">Your Results</CardTitle>
           </CardHeader>
           <CardContent className="space-y-6">
-            <h2 className="text-2xl font-bold text-[var(--brand-accent)]">{result.recommendation}</h2>
-            <p className="text-sm text-[var(--brand-text,#64748b)]">
-              Confidence Level: {state.confidence !== null ? `${state.confidence}%` : 'Not provided'}
-            </p>
-            <div className="space-y-2">
-              <h3 className="font-semibold text-[var(--brand-text,#1e293b)] mb-2">Why this fits you:</h3>
-              <ul className="list-none space-y-1">
-                {result.reasons.map((item, index) => (
-                  <li key={index} className="text-sm text-[var(--brand-text,#64748b)] flex items-start">
-                    <span className="text-[var(--brand-accent)] mr-2">•</span>
-                    {item}
-                  </li>
-                ))}
-              </ul>
-              <h3 className="font-semibold text-[var(--brand-text,#1e293b)] mb-2">What to do next:</h3>
-              <ul className="list-none space-y-1">
-                {result.nextSteps.map((item, index) => (
-                  <li key={index} className="text-sm text-[var(--brand-text,#64748b)] flex items-start">
-                    <span className="text-[var(--brand-accent)] mr-2">•</span>
-                    {item}
-                  </li>
-                ))}
-              </ul>
+            <div className="text-center space-y-1">
+              <h2 className="text-2xl font-bold text-[var(--brand-accent)]">{content.name}</h2>
+              <p className="text-xs text-muted-foreground">Confidence Level: {state.confidence !== null ? `${state.confidence}%` : 'Not provided'}</p>
             </div>
 
+            {/* Flip Card */}
+            <FlipCard imageUrl={content.imageUrl} superpower={content.superpower} domainScores={domainScores} />
+            <p className="text-center text-xs text-muted-foreground">Click card to see more</p>
+
+            {/* Two info cards */}
+            <div className="grid gap-4 grid-cols-1 sm:grid-cols-2">
+              <Card showLogo={false}>
+                <CardHeader>
+                  <CardTitle>Profile</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-sm text-[var(--brand-text,#1e293b)]">{content.profile}</p>
+                </CardContent>
+              </Card>
+
+              <Card showLogo={false}>
+                <CardHeader>
+                  <CardTitle>Growth Opportunity & Next Steps</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-3">
+                  <p className="text-sm text-[var(--brand-text,#1e293b)]">{content.growthOpportunity}</p>
+                  <p className="text-sm text-[var(--brand-text,#1e293b)]">Next Steps: {content.nextSteps}</p>
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* Share */}
             <Button
               onClick={() => {
                 const shareUrl = `${window.location.origin}/r/${encodeResults(state.confidence, state.answers)}`

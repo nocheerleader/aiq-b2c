@@ -3,6 +3,8 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { computeResult } from '@/lib/result'
+import { ARCHETYPES } from '@/data/archetypes'
+import { FlipCard } from '@/components/results/FlipCard'
 import { decodeResults } from '@/lib/share'
 
 export default function SharedResultPage({ params }: { params: { id: string } }) {
@@ -24,28 +26,42 @@ export default function SharedResultPage({ params }: { params: { id: string } })
   }
 
   const result = computeResult(decoded.confidence, decoded.answers)
+  const content = ARCHETYPES[result.archetype]
 
   return (
     <div className="min-h-screen bg-[var(--brand-bg,#f8fafc)] flex items-center justify-center p-4">
-      <Card className="w-full max-w-md bg-[var(--brand-card,white)]">
+      <Card className="w-full max-w-2xl bg-[var(--brand-card,white)]">
         <CardHeader>
-          <CardTitle className="text-xl text-center text-[var(--brand-text,#1e293b)]">Shared AIQ Results</CardTitle>
+          <CardTitle className="text-2xl text-center text-[var(--brand-text,#1e293b)]">Your Results</CardTitle>
         </CardHeader>
         <CardContent className="space-y-6">
-          <h2 className="text-2xl font-bold text-[var(--brand-accent)]">{result.recommendation}</h2>
-          <p className="text-sm text-[var(--brand-text,#64748b)]">
-            Confidence Level: {decoded.confidence !== null ? `${decoded.confidence}%` : 'Not provided'}
-          </p>
-          <div className="space-y-2">
-            <h3 className="font-semibold text-[var(--brand-text,#1e293b)] mb-2">Key insights:</h3>
-            <ul className="list-none space-y-1">
-              {result.reasons.map((item, index) => (
-                <li key={index} className="text-sm text-[var(--brand-text,#64748b)] flex items-start">
-                  <span className="text-[var(--brand-accent)] mr-2">•</span>
-                  {item}
-                </li>
-              ))}
-            </ul>
+          <div className="text-center space-y-1">
+            <h2 className="text-2xl font-bold text-[var(--brand-accent)]">{content.name}</h2>
+            <p className="text-xs text-muted-foreground">Confidence Level: {decoded.confidence !== null ? `${decoded.confidence}%` : 'Not provided'}</p>
+          </div>
+
+          <FlipCard imageUrl={content.imageUrl} superpower={content.superpower} domainScores={result.domainScores} />
+          <p className="text-center text-xs text-muted-foreground">Click card to see more</p>
+
+          <div className="grid gap-4 grid-cols-1 sm:grid-cols-2">
+            <Card showLogo={false}>
+              <CardHeader>
+                <CardTitle>Profile</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-sm text-[var(--brand-text,#1e293b)]">{content.profile}</p>
+              </CardContent>
+            </Card>
+
+            <Card showLogo={false}>
+              <CardHeader>
+                <CardTitle>Growth Opportunity & Next Steps</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                <p className="text-sm text-[var(--brand-text,#1e293b)]">{content.growthOpportunity}</p>
+                <p className="text-sm text-[var(--brand-text,#1e293b)]">Next Steps: {content.nextSteps}</p>
+              </CardContent>
+            </Card>
           </div>
 
           <Button onClick={() => (window.location.href = '/')} className="w-full bg-[var(--brand-accent)] text-white hover:bg-[color-mix(in_oklch, var(--brand-accent) 90%, white)]">
