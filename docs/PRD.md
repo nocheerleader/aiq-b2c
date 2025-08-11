@@ -24,8 +24,19 @@ Help users assess their AI readiness quickly and share a simple result. MVP is f
    - Slider 0–100.
 3. Questions (1–8)
    - Single- or multi-select options.
-4. Email (optional)
+4. Email Capture (optional)
    - Captured locally only (no network).
+   - Layout:
+     - Centered logo (from `Card`), Start over button top-right.
+     - Headline: "Your Results Are Ready".
+     - Red subhead strip: "See your score, confidence level and more!".
+     - Teaser preview: results card shown blurred with lock icon to signal it's computed and gated.
+     - Gift strip: "🎁 Free bonus: AI Prompt Mastery (7-page PDF)." on first line; second line smaller, italic: "Delivered when you unlock your results.".
+     - Email field labeled "Enter your email" (required to unlock CTA).
+     - Optional role chips (single select): Product, Marketing, Sales, Finance, HR, C‑Level, Engineering, Educator, Other.
+     - Primary CTA: "Unlock my Results" (enabled when email valid).
+     - Trust note: xs grey "We never share your responses. Unsubscribe anytime.".
+     - Secondary CTA: "Skip for now (for demo only)" goes to Results.
 5. Results
    - Recommendation + reasons + next steps.
    - Share button copies URL.
@@ -44,6 +55,7 @@ Help users assess their AI readiness quickly and share a simple result. MVP is f
   - `answers: Record<string, string | string[]>`
   - `currentQuestion?: number`
   - `email?: string`
+  - `role?: string`
   - `completedAt?: string`
 
 ## Scoring/Recommendation Logic (MVP)

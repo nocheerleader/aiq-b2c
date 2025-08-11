@@ -9,7 +9,7 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { ArrowLeft, ArrowRight, RotateCcw, Share2, CheckCircle2 } from 'lucide-react'
+import { ArrowLeft, ArrowRight, RotateCcw, Share2, CheckCircle2, Lock } from 'lucide-react'
 import { questions } from '@/data/questions'
 import { useQuizState } from '@/hooks/useQuizState'
 import { computeResult } from '@/lib/result'
@@ -437,34 +437,108 @@ export default function AIQReadinessQuiz() {
 
   // Email Capture Screen
   if (state.currentStep === "email") {
+    const resultPreview = computeResult(state.confidence, state.answers)
+    const roles = [
+      'Product',
+      'Marketing',
+      'Sales',
+      'Finance',
+      'HR',
+      'C-Level',
+      'Engineering',
+      'Educator',
+      'Other',
+    ] as const
+
+    const isValidEmail = (email: string | undefined) => {
+      if (!email) return false
+      // Lightweight email validation suitable for client-side gating
+      return /.+@.+\..+/.test(email.trim())
+    }
+
+    const canUnlock = isValidEmail(state.email)
+
     return (
       <>
       <div className="min-h-screen bg-[var(--brand-bg,#f8fafc)] flex items-center justify-center p-4">
         <Card className="relative w-full max-w-md bg-[var(--brand-card,white)]">
           <CardHeader className="relative">
-            <RestartButton onRequestRestart={handleRequestRestart} />
-            <div className="mb-4">
-              <CardTitle className="text-xl text-[var(--brand-text,#1e293b)] text-center">Almost Done!</CardTitle>
+            <div className="flex items-center justify-end mb-2">
+              <RestartButton onRequestRestart={handleRequestRestart} position="static" />
+            </div>
+            <div className="mb-2">
+              <CardTitle className="text-2xl text-[var(--brand-text,#1e293b)] text-center">Your Results Are Ready</CardTitle>
+            </div>
+            <div className="px-6 w-full">
+              <p className="text-center text-xl text-[var(--brand-text,#1e293b)]">See your score, confidence level and more!</p>
             </div>
           </CardHeader>
           <CardContent className="space-y-6">
-            <div className="space-y-4">
-              <Label className="text-lg font-medium text-[var(--brand-text,#1e293b)]">
-                Get your personalized results
-              </Label>
+            {/* Teaser preview (blurred card with lock) */}
+            <div className="relative border rounded-lg p-4 bg-muted/20">
+              <div className="absolute right-3 top-3 text-muted-foreground">
+                <Lock className="h-5 w-5" />
+              </div>
+              <div className="blur-sm select-none pointer-events-none">
+                <p className="text-base font-semibold text-[var(--brand-accent)]">{resultPreview.recommendation}</p>
+                <p className="text-xs text-muted-foreground mt-1">Confidence: {state.confidence ?? '—'}%</p>
+                <ul className="mt-2 space-y-1 text-xs text-muted-foreground">
+                  {resultPreview.reasons.slice(0, 3).map((r, i) => (
+                    <li key={i}>• {r}</li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+
+            {/* Gift strip */}
+            <div className="text-[var(--brand-text,#1e293b)] text-center">
+              <p>🎁 Bonus Gift: AI Prompt Mastery Guide</p>
+              <p className="text-xs italic text-muted-foreground mt-1">Delivered when you unlock your results.</p>
+            </div>
+
+            {/* Email */}
+            <div className="space-y-2">    
               <Input
                 type="email"
                 placeholder="Enter your email"
                 value={state.email || ""}
+                aria-invalid={state.email ? !isValidEmail(state.email) : undefined}
                 onChange={(e) => updateState({ email: e.target.value })}
                 onBlur={(e) => updateState({ email: e.target.value }, { immediate: true })}
               />
             </div>
 
+            {/* Role chips (optional) */}
+            <div className="space-y-2">
+              <div>
+                <Label className="text-sm font-medium text-[var(--brand-text,#1e293b)]">Select your role</Label>
+                <p className="text-xs text-muted-foreground mt-0.5">optional but it will help tailor your plan</p>
+              </div>
+              <div className="grid grid-cols-3 gap-2">
+                {roles.map((role) => {
+                  const selected = state.role === role
+                  return (
+                    <Button
+                      key={role}
+                      type="button"
+                      variant={selected ? 'default' : 'outline'}
+                      className={`h-9 text-xs ${selected ? 'bg-[var(--brand-accent)] text-white' : ''}`}
+                      onClick={() => updateState({ role }, { immediate: true })}
+                    >
+                      {role}
+                    </Button>
+                  )
+                })}
+              </div>
+            </div>
+
+            {/* CTAs */}
             <div className="flex flex-col gap-3">
               <MovingBorderWrapper className="w-full">
                 <Button
-                  onClick={() =>
+                  aria-disabled={!canUnlock}
+                  onClick={() => {
+                    if (!canUnlock) return
                     updateState(
                       {
                         currentStep: "results",
@@ -472,13 +546,16 @@ export default function AIQReadinessQuiz() {
                       },
                       { immediate: true },
                     )
-                  }
-                  className="w-full bg-[var(--brand-accent)] text-white hover:bg-[color-mix(in_oklch, var(--brand-accent) 90%, white)] hover:scale-105 hover:shadow-lg transition-all duration-200 ease-out"
+                  }}
+                  className={`w-full bg-[var(--brand-accent)] text-white hover:bg-[color-mix(in_oklch, var(--brand-accent) 90%, white)] transition-all duration-200 ease-out ${
+                    canUnlock ? 'hover:scale-105 hover:shadow-lg' : 'cursor-not-allowed'
+                  }`}
                   size="lg"
                 >
-                  View Results
+                  Unlock my Results
                 </Button>
               </MovingBorderWrapper>
+              <p className="text-xs text-muted-foreground text-center">We never share your responses. Unsubscribe anytime.</p>
               <Button
                 variant="outline"
                 onClick={() =>
@@ -492,7 +569,7 @@ export default function AIQReadinessQuiz() {
                 }
                 className="w-full"
               >
-                Skip for now
+                Skip for now (for demo only)
               </Button>
             </div>
           </CardContent>

@@ -6,6 +6,7 @@ export interface QuizState {
   answers: Record<string, string | string[]>
   currentQuestion?: number
   email?: string
+  role?: string
   completedAt?: string
 }
 
