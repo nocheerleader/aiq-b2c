@@ -15,6 +15,7 @@ import { useQuizState } from '@/hooks/useQuizState'
 import { computeResult } from '@/lib/result'
 import { encodeResults } from '@/lib/share'
 import { MovingBorderWrapper } from '@/components/ui/moving-border'
+import { CircularText } from '@/components/ui/circular-text'
 
 // Confidence slider helpers
 const CONFIDENCE_STOPS = [0, 25, 50, 100] as const
@@ -474,19 +475,27 @@ export default function AIQReadinessQuiz() {
             </div>
           </CardHeader>
           <CardContent className="space-y-6">
-            {/* Teaser preview (blurred card with lock) */}
-            <div className="relative border rounded-lg p-4 bg-muted/20">
-              <div className="absolute right-3 top-3 text-muted-foreground">
+            {/* Teaser preview (square, blurred, lock, spinning circular text) */}
+            <div className="relative mx-auto w-56 sm:w-64 aspect-square border rounded-lg p-4 bg-neutral-900/80 overflow-hidden">
+              {/* Lock icon (explicit red) */}
+              <div className="absolute right-3 top-3 text-[#ef4444]">
                 <Lock className="h-5 w-5" />
               </div>
+              {/* Blurred preview content */}
               <div className="blur-sm select-none pointer-events-none">
-                <p className="text-base font-semibold text-[var(--brand-accent)]">{resultPreview.recommendation}</p>
-                <p className="text-xs text-muted-foreground mt-1">Confidence: {state.confidence ?? '—'}%</p>
-                <ul className="mt-2 space-y-1 text-xs text-muted-foreground">
+                <p className="text-base font-semibold text-white/90">{resultPreview.recommendation}</p>
+                <p className="text-xs text-white/60 mt-1">Confidence: {state.confidence ?? '—'}%</p>
+                <ul className="mt-2 space-y-1 text-xs text-white/60">
                   {resultPreview.reasons.slice(0, 3).map((r, i) => (
                     <li key={i}>• {r}</li>
                   ))}
                 </ul>
+              </div>
+              {/* Spinning circular text overlay */}
+              <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                <div className="text-[#ef4444] drop-shadow-sm animate-[spin_10s_linear_infinite]">
+                  <CircularText text="UNLOCK*YOUR*RESULTS*" radius={80} characterClassName="text-lg" />
+                </div>
               </div>
             </div>
 
