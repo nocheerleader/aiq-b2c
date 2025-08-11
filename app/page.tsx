@@ -384,9 +384,11 @@ export default function AIQReadinessQuiz() {
               {question.multiSelect ? (
                 <div className="space-y-3">
                   {question.options.map((option) => (
-                    <div key={option.key} className="flex items-center space-x-2">
+                    <div key={option.key} className="w-full">
+                      {/* Hide the checkbox control but keep it accessible; use it as a peer to style the card */}
                       <Checkbox
                         id={`${question.id}-${option.key}`}
+                        className="sr-only peer"
                         checked={((currentAnswer as string[]) || []).includes(option.key)}
                         onCheckedChange={(checked) => {
                           const current = (currentAnswer as string[]) || []
@@ -397,18 +399,25 @@ export default function AIQReadinessQuiz() {
                           }
                         }}
                       />
-                      <Label htmlFor={`${question.id}-${option.key}`} className="text-sm font-normal">
+                      <Label
+                        htmlFor={`${question.id}-${option.key}`}
+                        className="block w-full cursor-pointer rounded-lg border border-input bg-background p-3 text-sm font-normal transition-colors hover:bg-muted peer-data-[state=checked]:border-primary peer-data-[state=checked]:bg-primary/5 peer-focus-visible:ring-2 peer-focus-visible:ring-ring"
+                      >
                         {option.label}
                       </Label>
                     </div>
                   ))}
                 </div>
               ) : (
-                <RadioGroup value={(currentAnswer as string) || ""} onValueChange={handleAnswerChange}>
+                <RadioGroup className="w-full" value={(currentAnswer as string) || ""} onValueChange={handleAnswerChange}>
                   {question.options.map((option) => (
-                    <div key={option.key} className="flex items-center space-x-2">
-                      <RadioGroupItem value={option.key} id={`${question.id}-${option.key}`} />
-                      <Label htmlFor={`${question.id}-${option.key}`} className="text-sm font-normal">
+                    <div key={option.key} className="w-full">
+                      {/* Hide the radio dot; use the radio as a peer to style the card */}
+                      <RadioGroupItem value={option.key} id={`${question.id}-${option.key}`} className="sr-only peer" />
+                      <Label
+                        htmlFor={`${question.id}-${option.key}`}
+                        className="block w-full cursor-pointer rounded-lg border border-input bg-background p-3 text-sm font-normal transition-colors hover:bg-muted peer-data-[state=checked]:border-primary peer-data-[state=checked]:bg-primary/5 peer-focus-visible:ring-2 peer-focus-visible:ring-ring"
+                      >
                         {option.label}
                       </Label>
                     </div>
