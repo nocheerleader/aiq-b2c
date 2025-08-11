@@ -39,7 +39,7 @@ export function FlipCard({
 
         {/* Back */}
         <Card showLogo={false} className="absolute inset-0 [backface-visibility:hidden] [transform:rotateY(180deg)] flex">
-          <CardContent className="w-full h-full flex flex-col justify-center">
+          <CardContent className="w-full h-full flex flex-col justify-center px-2 sm:px-4 py-2">
             <DomainBars domainScores={domainScores} />
           </CardContent>
         </Card>

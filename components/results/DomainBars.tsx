@@ -1,6 +1,6 @@
 "use client"
 
-import { Bar, BarChart, XAxis, YAxis } from "recharts"
+import { Bar, BarChart, XAxis, YAxis, ResponsiveContainer } from "recharts"
 import { Card, CardContent } from "@/components/ui/card"
 import { ChartContainer, ChartTooltip } from "@/components/ui/chart"
 import { DomainScores } from "@/lib/result"
@@ -22,26 +22,30 @@ export function DomainBars({ domainScores }: { domainScores: DomainScores }) {
     <Card showLogo={false} className="bg-transparent border-0 shadow-none p-0">
       <CardContent className="p-0">
         <ChartContainer config={chartConfig}>
-          <BarChart
-            accessibilityLayer
-            data={chartData}
-            layout="vertical"
-            margin={{ left: -10, right: 0, top: 0, bottom: 0 }}
-            width={360}
-            height={140}
-          >
-            <XAxis type="number" dataKey="score" hide domain={[0, 9]} />
-            <YAxis
-              dataKey="label"
-              type="category"
-              tickLine={false}
-              tickMargin={8}
-              axisLine={false}
-              tickFormatter={(value: string) => value}
-            />
-            <ChartTooltip />
-            <Bar dataKey="score" name="Score" fill="var(--chart-1)" radius={5} />
-          </BarChart>
+          <div className="w-full h-[160px]">
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart
+                accessibilityLayer
+                data={chartData}
+                layout="vertical"
+                margin={{ left: 16, right: 16, top: 8, bottom: 8 }}
+                barCategoryGap={14}
+              >
+                <XAxis type="number" dataKey="score" hide domain={[0, 9]} />
+                <YAxis
+                  dataKey="label"
+                  type="category"
+                  tickLine={false}
+                  tickMargin={12}
+                  axisLine={false}
+                  width={110}
+                  tickFormatter={(value: string) => value}
+                />
+                <ChartTooltip />
+                <Bar dataKey="score" name="Score" fill="var(--chart-1)" radius={5} />
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
         </ChartContainer>
       </CardContent>
     </Card>

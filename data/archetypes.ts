@@ -17,7 +17,7 @@ export const ARCHETYPES: Record<ArchetypeName, ArchetypeContent> = {
     superpower: "Deep understanding. You connect the dots others can’t see.",
     growthOpportunity: "Use your knowledge to create with AI.",
     nextSteps: "TBD",
-    imageUrl: "/placeholder.jpg",
+    imageUrl: "/thinker.png",
   },
   "The Dreamer": {
     name: "The Dreamer",
@@ -26,7 +26,7 @@ export const ARCHETYPES: Record<ArchetypeName, ArchetypeContent> = {
     superpower: "Creative vision. You bring humanity to the machine.",
     growthOpportunity: "Learn how to guide AI with stronger inputs and constraints.",
     nextSteps: "TBD",
-    imageUrl: "/placeholder.jpg",
+    imageUrl: "/dreamer.png",
   },
   "The Builder": {
     name: "The Builder",
@@ -35,7 +35,7 @@ export const ARCHETYPES: Record<ArchetypeName, ArchetypeContent> = {
     superpower: "Execution at speed. You ship, test, and improve on repeat.",
     growthOpportunity: "Zoom out and explore why you’re building, not just how.",
     nextSteps: "TBD",
-    imageUrl: "/placeholder.jpg",
+    imageUrl: "/builder.png",
   },
 }
 
